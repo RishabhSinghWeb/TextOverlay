@@ -38,7 +38,7 @@ def center_crop(img, w_ratio, h_ratio):
 #     draw.pieslice([ (x0, y1 - rad * 2), (x0 + rad * 2, y1) ], 90, 180, fill=fill)
 #     draw.pieslice([ (x1 - rad * 2, y0), (x1, y0 + rad * 2) ], 270, 360, fill=fill)
 
-def display_text(display, image, text, h, w, font_path, font_size, margin, autofit_text = True):
+def display_text(display, image, text, h, w, font_path, font_size, margin = 10, autofit_text = True):
     image_text_ratio = 0.3      # amount of screen covered with text 0.6 for 60%
     text_shadow=15
 
@@ -60,7 +60,7 @@ def display_text(display, image, text, h, w, font_path, font_size, margin, autof
         if font_height*text_width/w/h < image_text_ratio or font_size < 8: autofit_text = False
 
     if margin == "auto":
-        margin = min(10, font_size)
+        margin = min(margin, font_size)
     if side == 'left' or side == 'right':
         lines = min((h//font_height)-2, len(text.split()))
     elif side == 'top' or side == 'bottom':
@@ -82,7 +82,7 @@ def display_text(display, image, text, h, w, font_path, font_size, margin, autof
         if side == 'left':
             x, y = margin, height_offset+font_height
         elif side == 'right':
-            x, y = width_offset-margin-font_margin, height_offset+font_height
+            x, y = width_offset-10-margin, height_offset+font_height
         elif side == 'top':
             x, y = int(width_offset/2), height_offset+margin
         elif side == 'bottom':
@@ -118,16 +118,16 @@ def gradularBlur(image, side, w, h, blur_accuracy, blur_scale):
     return image
 
 def generate(image_path, side='bottom', text=None, font_size='7%', font_path='Fonts/OpenSans.ttf', blur_accuracy=20,
-             blur_scale=20, margin = "auto", autofit_text = True):
+             blur_scale=20, margin = 10, autofit_text = True):
     with Image.open(image_path) as image:
         image = center_crop(image, crop_ratio[0], crop_ratio[1])
 
         w,h = image.size
         if text:
-            image = display_text(display="shadow",image=image, text=text, h=h, w=w, font_path=font_path, font_size=font_size, autofit_text=autofit_text, margin = margin)
+            image = display_text(display="shadow",image=image, text=text, h=h, w=w, font_path=font_path, font_size=font_size, autofit_text=autofit_text)
         image = gradularBlur(image=image, side=side, w=w, h=h, blur_accuracy=blur_accuracy, blur_scale=blur_scale)
         if text:
-            image = display_text(display="text",image=image, text=text, h=h, w=w, font_path=font_path, font_size=font_size, autofit_text=autofit_text, margin = margin)
+            image = display_text(display="text",image=image, text=text, h=h, w=w, font_path=font_path, font_size=font_size, autofit_text=autofit_text)
 
         return image
 
